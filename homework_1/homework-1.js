@@ -2,17 +2,20 @@ const readline = require('node:readline/promises')
 
 
 const PRICE_PER_EXTRA_KILOMETER = 25
+const MIN_PRICE = 200
 
 
 function printTicketResult(category, budget) {
     const price = ticketPrice(category)
-    const count = maxTickets(budget, price)
 
     if (price === 0) {
         console.log('неизвестная категория')
-    } else {
-        console.log(`Категория ${category}, билет ${price} руб., бюджет ${budget} руб.: можно купить ${count} шт.`)
-    }
+        return
+    } 
+
+    const count = maxTickets(budget, price)
+
+    console.log(`Категория ${category}, билет ${price} руб., бюджет ${budget} руб.: можно купить ${count} шт.`)
 }
 
 
@@ -20,7 +23,7 @@ function maxTickets(budget, price) {
     let count = 0
     let totalPrice = 0
 
-    while ((totalPrice + price) < budget) {
+    while ((totalPrice + price) <= budget) {
         totalPrice += price
         count += 1
     }
@@ -33,13 +36,10 @@ function ticketPrice(category) {
     switch (category) {
         case 1:
             return 300;
-            break;
         case 2:
             return 500;
-            break;
         case 3:
             return 900;
-            break;
         default:
             return 0;
     }
@@ -58,17 +58,11 @@ function  deliveryPrice(distance, total) {
         return 0
     }
 
-    if (4 <= distance <= 10) {
+    if (distance <= 10) {
         return 200
-    } else {
-        let price = 200
-        
-        if (distance - 10 > 0) {
-            price += PRICE_PER_EXTRA_KILOMETER * (distance - 10)
-        }
-
-        return price
     }
+    
+    return MIN_PRICE + PRICE_PER_EXTRA_KILOMETER * (distance - 10)
 }
 
 
@@ -80,13 +74,13 @@ function printSteps(height) {
             continue
         }
 
-        if (stepNumber > 10) {
-            console.log('Дальше лестница не строится')
-            break
-        }
-
         console.log(`Ступень ${stepNumber}`)
         ++totalSteps
+
+        if (stepNumber === 10) {
+            console.log('Дальше лестница не построена')
+            break
+        }
     }
 
     console.log(`Всего построено: ${totalSteps}`)
